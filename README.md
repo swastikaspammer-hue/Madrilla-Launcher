@@ -12,3 +12,8 @@ If you are concerned that a malicious update may be pushed in the future, the au
 This launcher and its components feature **absolutely zero obfuscation techniques or packing/protection**. 
 
 The UI and update logic are completely open-source (you are reading the source code repository right now). For any of the internal pre-compiled modules (like the `.dll` or `.exe` files included in the release zip), you are actively encouraged to reverse engineer them if you'd like to verify their safety or see how they tick. Everything is out in the open.
+
+### Support & Contact
+If you have any questions or run into issues, you can:
+- Join the Discord server: https://discord.gg/rdBDhNZt4f
+- Message me directly on Discord.
