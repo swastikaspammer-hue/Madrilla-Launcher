@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { spawn, execSync } = require('child_process');
 const fs = require('fs');
+const https = require('https');
 
 // Dynamically resolve Steam install path via Windows registry
 function getSteamPath() {
@@ -67,7 +68,59 @@ function createWindow() {
     mainWindow.loadURL(devUrl);
   }
 }
-app.whenReady().then(createWindow);
+function downloadFile(url, dest) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      if (res.statusCode !== 200) {
+        reject(new Error(`Failed to download ${url}: ${res.statusCode}`));
+        return;
+      }
+      const file = fs.createWriteStream(dest);
+      res.pipe(file);
+      file.on('finish', () => {
+        file.close();
+        resolve();
+      });
+    }).on('error', (err) => {
+      reject(err);
+    });
+  });
+}
+
+function checkLauncherUpdate() {
+  const repoUrl = 'https://raw.githubusercontent.com/swastikaspammer-hue/Madrilla-Launcher/master/bin/resources/app/package.json';
+  
+  https.get(repoUrl, (res) => {
+    if (res.statusCode !== 200) return;
+    let data = '';
+    res.on('data', chunk => data += chunk);
+    res.on('end', async () => {
+      try {
+        const remotePkg = JSON.parse(data);
+        const localPkg = require('./package.json');
+        if (remotePkg.version !== localPkg.version) {
+          console.log('Launcher update found! Downloading...');
+          
+          await downloadFile('https://raw.githubusercontent.com/swastikaspammer-hue/Madrilla-Launcher/master/bin/resources/app/electron-main.cjs', path.join(__dirname, 'electron-main.cjs'));
+          await downloadFile('https://raw.githubusercontent.com/swastikaspammer-hue/Madrilla-Launcher/master/bin/resources/app/dist/script.js', path.join(__dirname, 'dist', 'script.js'));
+          await downloadFile('https://raw.githubusercontent.com/swastikaspammer-hue/Madrilla-Launcher/master/bin/resources/app/dist/index.html', path.join(__dirname, 'dist', 'index.html'));
+          await downloadFile('https://raw.githubusercontent.com/swastikaspammer-hue/Madrilla-Launcher/master/bin/resources/app/package.json', path.join(__dirname, 'package.json'));
+          
+          console.log('Update complete. Relaunching...');
+          app.relaunch();
+          app.exit(0);
+        }
+      } catch (e) {
+        console.error('Update failed:', e);
+      }
+    });
+  }).on('error', (e) => console.error('Update check failed:', e));
+}
+
+app.whenReady().then(() => {
+  createWindow();
+  checkLauncherUpdate();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
