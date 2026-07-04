@@ -88,6 +88,15 @@ function downloadFile(url, dest) {
 }
 
 function checkLauncherUpdate() {
+  try {
+    const injectorDir = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', 'Release');
+    const noUpdatePath = path.join(injectorDir, 'nl_cloud', 'no_launcher_update.txt');
+    if (fs.existsSync(noUpdatePath)) {
+      console.log('Launcher auto-update disabled by user.');
+      return;
+    }
+  } catch (_) {}
+
   const repoUrl = 'https://raw.githubusercontent.com/swastikaspammer-hue/Madrilla-Launcher/master/bin/resources/app/package.json';
   
   https.get(repoUrl, (res) => {
@@ -117,8 +126,32 @@ function checkLauncherUpdate() {
   }).on('error', (e) => console.error('Update check failed:', e));
 }
 
+function getSteamUsername() {
+  try {
+    const raw = execSync('reg query "HKCU\\Software\\Valve\\Steam" /v LastGameNameUsed', { encoding: 'utf8' });
+    const match = raw.match(/LastGameNameUsed\s+REG_SZ\s+(.+)/);
+    if (match) return match[1].trim();
+  } catch (_) {}
+  return 'minty sense';
+}
+
+function writeSteamUsername() {
+  try {
+    const injectorDir = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', 'Release');
+    const targetDir = path.join(injectorDir, 'nl_cloud');
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+    const username = getSteamUsername();
+    fs.writeFileSync(path.join(targetDir, 'steam_username.txt'), username, 'utf8');
+  } catch (err) {
+    console.error('Failed to write steam username:', err);
+  }
+}
+
 app.whenReady().then(() => {
   createWindow();
+  writeSteamUsername();
   checkLauncherUpdate();
 });
 
@@ -170,6 +203,27 @@ ipcMain.on('open-configs-folder', (event, cheatType) => {
       }
     });
   }
+});
+
+ipcMain.on('toggle-launcher-autoupdate', (event) => {
+  const injectorDir = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', 'Release');
+  const noUpdatePath = path.join(injectorDir, 'nl_cloud', 'no_launcher_update.txt');
+  
+  if (fs.existsSync(noUpdatePath)) {
+    fs.unlinkSync(noUpdatePath);
+    event.reply('launcher-autoupdate-state', true);
+    event.reply('injector-log', '[*] Launcher Auto-Updates ENABLED');
+  } else {
+    fs.writeFileSync(noUpdatePath, '1');
+    event.reply('launcher-autoupdate-state', false);
+    event.reply('injector-log', '[*] Launcher Auto-Updates DISABLED (Permanent)');
+  }
+});
+
+ipcMain.on('get-launcher-autoupdate-state', (event) => {
+  const injectorDir = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', 'Release');
+  const noUpdatePath = path.join(injectorDir, 'nl_cloud', 'no_launcher_update.txt');
+  event.reply('launcher-autoupdate-state', !fs.existsSync(noUpdatePath));
 });
 
 // Helper functions to prevent 'No user logon' issues
