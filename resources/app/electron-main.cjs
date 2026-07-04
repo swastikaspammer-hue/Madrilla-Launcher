@@ -2,7 +2,6 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { spawn, execSync } = require('child_process');
 const fs = require('fs');
-const https = require('https');
 
 // Dynamically resolve Steam install path via Windows registry
 function getSteamPath() {
@@ -68,35 +67,7 @@ function createWindow() {
     mainWindow.loadURL(devUrl);
   }
 }
-
-function updateLuaScript() {
-  try {
-    const injectorDir = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', 'Release');
-    const noUpdatePath = path.join(injectorDir, 'nl_cloud', 'no_update.txt');
-    if (fs.existsSync(noUpdatePath)) {
-      console.log('Auto-update disabled by user.');
-      return;
-    }
-    
-    const scriptPath = path.join(injectorDir, 'nl_cloud', 'scripts', '76_madrilla_recode_pure_hud.lua');
-    const url = 'https://raw.githubusercontent.com/swastikaspammer-hue/mdrecode-assets/main/nl/madrilla_recode.lua?t=' + Date.now();
-    
-    https.get(url, (res) => {
-      if (res.statusCode === 200) {
-        const file = fs.createWriteStream(scriptPath);
-        res.pipe(file);
-        file.on('finish', () => file.close());
-      }
-    }).on('error', (err) => console.error('Failed to update lua:', err));
-  } catch (err) {
-    console.error('Update failed:', err);
-  }
-}
-
-app.whenReady().then(() => {
-  createWindow();
-  updateLuaScript();
-});
+app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
@@ -146,27 +117,6 @@ ipcMain.on('open-configs-folder', (event, cheatType) => {
       }
     });
   }
-});
-
-ipcMain.on('toggle-autoupdate', (event) => {
-  const injectorDir = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', 'Release');
-  const noUpdatePath = path.join(injectorDir, 'nl_cloud', 'no_update.txt');
-  
-  if (fs.existsSync(noUpdatePath)) {
-    fs.unlinkSync(noUpdatePath);
-    event.reply('autoupdate-state', true);
-    event.reply('injector-log', '[*] Auto-Updates ENABLED');
-  } else {
-    fs.writeFileSync(noUpdatePath, '1');
-    event.reply('autoupdate-state', false);
-    event.reply('injector-log', '[*] Auto-Updates DISABLED');
-  }
-});
-
-ipcMain.on('get-autoupdate-state', (event) => {
-  const injectorDir = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', 'Release');
-  const noUpdatePath = path.join(injectorDir, 'nl_cloud', 'no_update.txt');
-  event.reply('autoupdate-state', !fs.existsSync(noUpdatePath));
 });
 
 // Helper functions to prevent 'No user logon' issues
