@@ -3,7 +3,10 @@
 Download the latest release zip from the Releases tab to get started.
 
 ### Features
-This is a heavily modified and improved version of the "femboy variants". It includes significantly more features and a built-in background auto-updater for Lua scripts.
+This is a heavily modified and improved version of the "femboy lose" and "femboysense" launchers. It includes significantly more features and a built-in background auto-updater for Lua scripts.
+
+### Auto-Update Security
+If you are concerned that a malicious update may be pushed in the future, the auto-updater can be completely disabled for both the launcher and the scripts directly via the toggle in the UI Action Center.
 
 ### Transparency & Reverse Engineering
 This launcher and its components feature **absolutely zero obfuscation techniques or packing/protection**. 
