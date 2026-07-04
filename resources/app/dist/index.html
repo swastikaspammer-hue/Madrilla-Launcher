@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MADRILLA | SUPREME</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="theme-sense">
+  <div class="app-shell">
+    
+    <!-- Titlebar -->
+    <div class="titlebar drag-region">
+      <div class="brand">
+        <span class="logo-text">MADRILLA</span><span class="logo-accent">.CC</span>
+      </div>
+      <div class="window-controls no-drag">
+        <button class="ctrl-btn" id="btn-minimize">
+          <svg width="10" height="10" viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="3" stroke-linecap="round"></line></svg>
+        </button>
+        <button class="ctrl-btn close" id="btn-close">
+          <svg width="10" height="10" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="3" stroke-linecap="round"></line><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="3" stroke-linecap="round"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content no-drag">
+      
+      <!-- Payload Selector Cards -->
+      <div class="cards-container">
+        
+        <!-- Sense Card -->
+        <div class="payload-card active" id="card-sense" data-payload="sense">
+          <div class="card-bg-glow"></div>
+          <div class="card-inner">
+            <div class="card-header">
+              <h2 class="card-title">MadrillaSense</h2>
+              <div class="status-indicator"></div>
+            </div>
+            <div class="card-footer">
+              <div class="action-links">
+                <button class="action-link" id="btn-luas-sense">LUAS <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lose Card -->
+        <div class="payload-card" id="card-lose" data-payload="lose">
+          <div class="card-bg-glow"></div>
+          <div class="card-inner">
+            <div class="card-header">
+              <h2 class="card-title">MadrillaLose</h2>
+              <div class="status-indicator"></div>
+            </div>
+            <div class="card-footer">
+              <div class="action-links">
+                <button class="action-link" id="btn-configs-lose">CONFIGS <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
+                <button class="action-link" id="btn-luas-lose">LUAS <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Center -->
+      <div class="action-center">
+        <button class="utility-btn" id="btn-clean" title="Run No User Logon Fix">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+        </button>
+        <button class="launch-btn" id="btn-launch">
+          <span class="launch-text" id="launch-text">INJECT MADRILLASENSE</span>
+          <div class="launch-glow"></div>
+        </button>
+        <button class="utility-btn" id="btn-kill" title="Kill CS:GO Process">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+        </button>
+      </div>
+
+      <!-- Hacker Terminal -->
+      <div class="terminal-wrapper">
+        <div class="terminal-scanlines"></div>
+        <div class="terminal-header">SYSTEM LOG</div>
+        <div class="terminal-body" id="console-output">
+          <div class="log-line">[*] MADRILLA.CC INITIALIZED</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
