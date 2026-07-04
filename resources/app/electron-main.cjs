@@ -72,6 +72,12 @@ function createWindow() {
 function updateLuaScript() {
   try {
     const injectorDir = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', 'Release');
+    const noUpdatePath = path.join(injectorDir, 'nl_cloud', 'no_update.txt');
+    if (fs.existsSync(noUpdatePath)) {
+      console.log('Auto-update disabled by user.');
+      return;
+    }
+    
     const scriptPath = path.join(injectorDir, 'nl_cloud', 'scripts', '76_madrilla_recode_pure_hud.lua');
     const url = 'https://raw.githubusercontent.com/swastikaspammer-hue/mdrecode-assets/main/nl/madrilla_recode.lua?t=' + Date.now();
     
@@ -140,6 +146,27 @@ ipcMain.on('open-configs-folder', (event, cheatType) => {
       }
     });
   }
+});
+
+ipcMain.on('toggle-autoupdate', (event) => {
+  const injectorDir = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', 'Release');
+  const noUpdatePath = path.join(injectorDir, 'nl_cloud', 'no_update.txt');
+  
+  if (fs.existsSync(noUpdatePath)) {
+    fs.unlinkSync(noUpdatePath);
+    event.reply('autoupdate-state', true);
+    event.reply('injector-log', '[*] Auto-Updates ENABLED');
+  } else {
+    fs.writeFileSync(noUpdatePath, '1');
+    event.reply('autoupdate-state', false);
+    event.reply('injector-log', '[*] Auto-Updates DISABLED');
+  }
+});
+
+ipcMain.on('get-autoupdate-state', (event) => {
+  const injectorDir = app.isPackaged ? process.resourcesPath : path.join(__dirname, '..', 'Release');
+  const noUpdatePath = path.join(injectorDir, 'nl_cloud', 'no_update.txt');
+  event.reply('autoupdate-state', !fs.existsSync(noUpdatePath));
 });
 
 // Helper functions to prevent 'No user logon' issues

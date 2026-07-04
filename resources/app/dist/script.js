@@ -13,6 +13,7 @@ const btnKill = document.getElementById('btn-kill');
 const btnClean = document.getElementById('btn-clean');
 const btnMinimize = document.getElementById('btn-minimize');
 const btnClose = document.getElementById('btn-close');
+const btnAutoupdate = document.getElementById('btn-autoupdate');
 
 const btnLuasSense = document.getElementById('btn-luas-sense');
 const btnLuasLose = document.getElementById('btn-luas-lose');
@@ -50,6 +51,10 @@ cardLose.addEventListener('click', (e) => {
 // Window Controls
 btnMinimize.addEventListener('click', () => ipcRenderer.send('window-minimize'));
 btnClose.addEventListener('click', () => ipcRenderer.send('window-close'));
+
+// Auto Update Toggle
+btnAutoupdate.addEventListener('click', () => ipcRenderer.send('toggle-autoupdate'));
+ipcRenderer.send('get-autoupdate-state');
 
 // Launch Button
 btnLaunch.addEventListener('click', () => {
@@ -120,4 +125,9 @@ ipcRenderer.on('injector-error', (event, msg) => {
 ipcRenderer.on('injector-exit', (event, code) => {
   const type = code === 0 ? 'success' : 'error';
   appendLog(`[*] Injector process exited with code ${code}`, type);
+});
+
+ipcRenderer.on('autoupdate-state', (event, isEnabled) => {
+  btnAutoupdate.style.opacity = isEnabled ? '1' : '0.4';
+  btnAutoupdate.title = isEnabled ? 'Auto-Update: ON' : 'Auto-Update: OFF';
 });
